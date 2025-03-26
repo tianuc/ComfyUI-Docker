@@ -115,7 +115,7 @@ echo "########################################"
 
 cd /root/ComfyUI/models
 aria2c \
-  --input-file=/runner-scripts/download-models.txt \
+ # --input-file=/runner-scripts/download-models.txt \
   --allow-overwrite=false \
   --auto-file-renaming=false \
   --continue=true \
