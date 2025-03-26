@@ -1,0 +1,73 @@
+FROM pytorch/pytorch:2.2.1-cuda12.4-cudnn8-devel
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+ENV LANG=zh_CN.UTF-8
+
+# 配置国内代理
+ENV HTTP_PROXY="http://mirrors.ustc.edu.cn"
+ENV HTTPS_PROXY="http://mirrors.ustc.edu.cn"
+ENV PIP_INDEX_URL="https://mirrors.cernet.edu.cn/pypi/web/simple"
+ENV HF_ENDPOINT="https://hf-mirror.com"
+
+USER root
+WORKDIR /root
+
+RUN apt-get update && \
+    apt-get install -y \
+    mesa-utils \
+    libegl1-mesa-dev \
+    libglib2.0-0 \
+    make \
+    ninja-build \
+    git \
+    aria2 \
+    fish \
+    fd-find \
+    vim \
+    libopencv-dev \
+    ffmpeg \
+    x264 \
+    x265 \
+    fonts-noto \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY builder-scripts/.  /builder-scripts/
+
+# Deps for ComfyUI & custom nodes
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+        -r /builder-scripts/pak3.txt
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+        -r /builder-scripts/pak5.txt
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+        -r /builder-scripts/pak7.txt
+
+# Make sure the deps fit the needs for ComfyUI & Manager
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+        -r https://gh-proxy.com/https://github.com/comfyanonymous/ComfyUI/raw/refs/heads/master/requirements.txt \
+        -r https://gh-proxy.com/https://github.com/ltdrdata/ComfyUI-Manager/raw/refs/heads/main/requirements.txt \
+    && pip list
+
+################################################################################
+
+RUN du -ah /root \
+    && find /root/ -mindepth 1 -delete
+
+COPY runner-scripts/.  /runner-scripts/
+
+RUN chmod +x /runner-scripts/download.sh \
+    && /runner-scripts/download.sh
+
+COPY extra_model_paths.yaml /root/ComfyUI/extra_model_paths.yaml
+
+EXPOSE 8188
+ENV CLI_ARGS=""
+ENTRYPOINT ["sh", "-c", "python3 /root/ComfyUI/main.py --listen --port 8188 $CLI_ARGS"] 
