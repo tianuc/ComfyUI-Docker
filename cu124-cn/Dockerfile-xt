@@ -5,9 +5,6 @@ ENV TZ=Etc/UTC
 ENV LANG=zh_CN.UTF-8
 
 # 配置国内代理
-ENV HTTP_PROXY="http://mirrors.ustc.edu.cn"
-ENV HTTPS_PROXY="http://mirrors.ustc.edu.cn"
-ENV PIP_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple/"
 ENV HF_ENDPOINT="https://hf-mirror.com"
 ENV HF_HUB_ENABLE_HF_TRANSFER="1"
 USER root
