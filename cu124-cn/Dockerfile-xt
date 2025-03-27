@@ -31,6 +31,9 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 COPY builder-scripts/.  /builder-scripts/
+# 配置pip
+RUN pip config set global.timeout 1000 && \
+    pip config set global.retries 5
 
 # Deps for ComfyUI & custom nodes
 RUN --mount=type=cache,target=/root/.cache/pip \
