@@ -108,18 +108,20 @@ clone_or_pull https://gh-proxy.com/https://github.com/cubiq/ComfyUI_FaceAnalysis
 clone_or_pull https://gh-proxy.com/https://github.com/pythongosssss/ComfyUI-WD14-Tagger.git
 clone_or_pull https://gh-proxy.com/https://github.com/SLAPaper/ComfyUI-Image-Selector.git
 clone_or_pull https://gh-proxy.com/https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git
-
+clone_or_pull https://gh-proxy.com/https://github.com/kijai/ComfyUI-SUPIR.git
+clone_or_pull https://gh-proxy.com/https://github.com/siliconflow/BizyAir.git
+clone_or_pull https://gh-proxy.com/https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation.git
 echo "########################################"
 echo "[INFO] 下载模型……"
 echo "########################################"
 
-cd /root/ComfyUI/models
-aria2c \
+#cd /root/ComfyUI/models
+#aria2c \
  # --input-file=/runner-scripts/download-models.txt \
-  --allow-overwrite=false \
-  --auto-file-renaming=false \
-  --continue=true \
-  --max-connection-per-server=3
+ # --allow-overwrite=false \
+ # --auto-file-renaming=false \
+#  --continue=true \
+ # --max-connection-per-server=3
 
 # 标记为下载完成，下次启动不再尝试下载
 touch /root/.download-complete
