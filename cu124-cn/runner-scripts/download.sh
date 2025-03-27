@@ -102,7 +102,7 @@ clone_or_pull https://gh-proxy.com/https://github.com/FizzleDorf/ComfyUI_FizzNod
 clone_or_pull https://gh-proxy.com/https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved.git
 clone_or_pull https://gh-proxy.com/https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
 clone_or_pull https://gh-proxy.com/https://github.com/melMass/comfy_mtb.git
-
+clone_or_pull https://gh-proxy.com/https://github.com/KwaiVGI/ComfyUI-KLingAI-API.git
 # 更多
 clone_or_pull https://gh-proxy.com/https://github.com/cubiq/ComfyUI_FaceAnalysis.git
 clone_or_pull https://gh-proxy.com/https://github.com/pythongosssss/ComfyUI-WD14-Tagger.git
