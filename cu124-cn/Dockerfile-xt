@@ -9,7 +9,6 @@ ENV HF_ENDPOINT="https://hf-mirror.com"
 ENV HF_HUB_ENABLE_HF_TRANSFER="1"
 USER root
 WORKDIR /root
-
 RUN apt-get update && \
     apt-get install -y \
     mesa-utils \
