@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
+FROM my-pytorch:2.5.1
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
@@ -7,8 +7,28 @@ ENV LANG=zh_CN.UTF-8
 # 配置国内代理
 ENV HF_ENDPOINT="https://hf-mirror.com"
 ENV HF_HUB_ENABLE_HF_TRANSFER="1"
+ENV PIP_INDEX_URL="https://pypi.mirrors.ustc.edu.cn/simple"
+ENV PIP_TRUSTED_HOST="pypi.mirrors.ustc.edu.cn"
+# 添加代理配置
+ENV HTTP_PROXY=""
+ENV HTTPS_PROXY=""
+ENV NO_PROXY="localhost,127.0.0.1"
+
 USER root
 WORKDIR /root
+
+# 使用国内apt源
+RUN sed -i 's@http://.*archive.ubuntu.com@http://mirrors.ustc.edu.cn@g' /etc/apt/sources.list && \
+    sed -i 's@http://deb.debian.org@http://mirrors.ustc.edu.cn@g' /etc/apt/sources.list && \
+    sed -i 's@http://security.debian.org@http://mirrors.ustc.edu.cn@g' /etc/apt/sources.list
+
+# 配置pip和下载加速
+RUN pip config set global.timeout 1000 && \
+    pip config set global.retries 5 && \
+    pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple && \
+    pip config set global.extra-index-url https://download.pytorch.org/whl/cu124
+
+# 安装编译工具和依赖
 RUN apt-get update && \
     apt-get install -y \
     mesa-utils \
@@ -28,31 +48,47 @@ RUN apt-get update && \
     fonts-noto \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
+    cmake \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY builder-scripts/.  /builder-scripts/
-# 配置pip
-RUN pip config set global.timeout 1000 && \
-    pip config set global.retries 5
 
-# Deps for ComfyUI & custom nodes
+# 分步安装依赖，并添加日志
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install \
-        -r /builder-scripts/pak3.txt
+    pip install --no-cache-dir \
+    numpy \
+    scipy \
+    cython \
+    && echo "基础包安装完成"
+
+# 为pip安装增加并发数和超时设置
+ENV PIP_INSTALL_OPTS="--timeout=1000 --retries=10 --no-cache-dir"
+
+# 安装指定版本的dlib (跳过编译以避免卡住)
+RUN pip install $PIP_INSTALL_OPTS dlib==19.24.6 --no-build-isolation --no-deps && \
+    echo "dlib安装完成"
+
+# 分步安装依赖，并添加日志
+RUN --mount=type=cache,target=/root/.cache/pip \
+    grep -v "dlib" /builder-scripts/pak3.txt > /builder-scripts/pak3_nodlib.txt && \
+    pip install $PIP_INSTALL_OPTS -r /builder-scripts/pak3_nodlib.txt && \
+    echo "pak3.txt 安装完成"
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install \
-        -r /builder-scripts/pak5.txt
+    pip install $PIP_INSTALL_OPTS -r /builder-scripts/pak5.txt && \
+    echo "pak5.txt 安装完成"
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install \
-        -r /builder-scripts/pak7.txt
+    pip install $PIP_INSTALL_OPTS -r /builder-scripts/pak7.txt && \
+    echo "pak7.txt 安装完成"
 
-# Make sure the deps fit the needs for ComfyUI & Manager
+# 安装ComfyUI依赖
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install \
-        -r https://github.com/comfyanonymous/ComfyUI/raw/refs/heads/master/requirements.txt \
-        -r https://github.com/ltdrdata/ComfyUI-Manager/raw/refs/heads/main/requirements.txt \
+    pip install $PIP_INSTALL_OPTS \
+    -r https://github.com/comfyanonymous/ComfyUI/raw/refs/heads/master/requirements.txt \
+    -r https://github.com/ltdrdata/ComfyUI-Manager/raw/refs/heads/main/requirements.txt \
+    && echo "ComfyUI依赖安装完成" \
     && pip list
 
 ################################################################################

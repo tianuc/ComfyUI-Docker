@@ -1,2 +1,8 @@
 **/storage/
 /.vscode/
+/.venv/
+**/.venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+*$py.class

@@ -27,6 +27,7 @@ https://github.com/storyicon/comfyui_segment_anything/raw/refs/heads/main/requir
 https://github.com/WASasquatch/was-node-suite-comfyui/raw/refs/heads/main/requirements.txt
 https://github.com/siliconflow/BizyAir/raw/refs/heads/main/requirements.txt
 https://github.com/kijai/ComfyUI-SUPIR/raw/refs/heads/main/requirements.txt
+https://github.com/KwaiVGI/ComfyUI-KLingAI-API/raw/refs/heads/main/requirements.txt
 )
 
 for line in "${array[@]}";
