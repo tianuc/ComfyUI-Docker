@@ -69,4 +69,4 @@ COPY extra_model_paths.yaml /root/ComfyUI/extra_model_paths.yaml
 
 EXPOSE 8188
 ENV CLI_ARGS="--fast"
-ENTRYPOINT ["sh", "-c", "python3 /root/ComfyUI/main.py --output-directory /data/comfyui/output --input-directory /data/comfyui/input --temp-directory /data/comfyui/temp --listen --port 8188 $CLI_ARGS"] 
+ENTRYPOINT ["sh", "-c", "python3 /root/ComfyUI/main.py --front-end-version Comfy-Org/ComfyUI_frontend@latest --output-directory /data/comfyui/output --input-directory /data/comfyui/input --temp-directory /data/comfyui/temp --listen --port 8188 $CLI_ARGS"] 
